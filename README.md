@@ -16,7 +16,7 @@ Terminal - Utilizado para executar os comandos e interagir com o Docker.
 # Como rodar o Projeto BuscaCEP e Endereço
 
 1 - Faça o download dos arquivos do repositório.
-2 - Faça o download do [Docker desktop] (https://www.docker.com/products/docker-desktop/).
+2 - Faça o download do [Docker desktop](https://www.docker.com/products/docker-desktop/).
 3 - Abra o terminal e navegue até o diretório do projeto.
 4 - Execute o comando: "docker build -t busca-cep-nginx ." para construir a imagem Docker.
 5 - Execute o comando: "docker run -d -p 80:80 busca-cep-nginx" para executar o container.
