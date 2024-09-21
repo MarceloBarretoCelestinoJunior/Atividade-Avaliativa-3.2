@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta e Histórico de CEP e Endereço</title>
+    <link rel="icon" href="https://i.pinimg.com/originals/2f/17/ef/2f17ef4fa7aa473fb7ba1edeac692035.png " type="image/png">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="container">
+        <h1 class="texto">Consulta de CEP e Endereço</h1>
+        <div class="formulario">
+            <form id="buscaCep">
+                <h2 class="fino">Buscar Endereço por CEP</h2>
+                <input type="text" id="cep" name="cep" maxlength="10" placeholder="Digite o CEP (8 dígitos)">
+                <input type="submit" value="Buscar Endereço">
+            </form>
+            <h2 class="texto">Buscar CEP por Endereço</h2>
+            <form id="buscaEndereco">
+                <select id="estado" name="estado">
+                    <option value="AC">Acre - AC</option>
+                    <option value="AL">Alagoas - AL</option>
+                    <option value="AP">Amapá - AP</option>
+                    <option value="AM">Amazonas - AM</option>
+                    <option value="BA">Bahia - BA</option>
+                    <option value="CE">Ceará - CE</option>
+                    <option value="DF">Distrito Federal - DF</option>
+                    <option value="ES">Espírito Santo - ES</option>
+                    <option value="GO">Goiás - GO</option>
+                    <option value="MA">Maranhão - MA</option>
+                    <option value="MT">Mato Grosso - MT</option>
+                    <option value="MS">Mato Grosso do Sul - MS</option>
+                    <option value="MG">Minas Gerais - MG</option>
+                    <option value="PA">Pará - PA</option>
+                    <option value="PB">Paraíba - PB</option>
+                    <option value="PR">Paraná - PR</option>
+                    <option value="PE">Pernambuco - PE</option>
+                    <option value="PI">Piauí - PI</option>
+                    <option value="RJ">Rio de Janeiro - RJ</option>
+                    <option value="RN">Rio Grande do Norte - RN</option>
+                    <option value="RS">Rio Grande do Sul - RS</option>
+                    <option value="RO">Rondônia - RO</option>
+                    <option value="RR">Roraima - RR</option>
+                    <option value="SC">Santa Catarina - SC</option>
+                    <option value="SP">São Paulo - SP</option>
+                    <option value="SE">Sergipe - SE</option>
+                    <option value="TO">Tocantins - TO</option>
+                </select>
+
+                <input type="text" id="cidade" name="cidade" placeholder="Cidade">
+                <input type="text" id="logradouro" name="logradouro" placeholder="Logradouro">
+                <input type="submit" value="Buscar CEP">
+            </form>
+
+            <button id="limpar">Limpar</button>
+        </div>
+        <h2 class="texto">Histórico de Pesquisas</h2>
+        <div id="resultados"></div>
+        <div id="historico"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            const formCep = document.getElementById('buscaCep');
+            const formEndereco = document.getElementById('buscaEndereco');
+            const resultContainer = document.getElementById('resultados');
+            const historicoContainer = document.getElementById('historico');
+
+            // Marcelo,aqui está a função para limpar resultados anteriores e evitar repetição
+            function limparResultados() {
+                resultContainer.innerHTML = ''; //limpa o container de resultados
+            }
+
+            formCep.addEventListener('submit', function (event) {
+                event.preventDefault();
+                limparResultados();  //limpa os resultados antes de exibir novos
+                const cep = formCep.cep.value.replace(/\D/g, '');
+                buscarEndereco(cep);
+            });
+
+            formEndereco.addEventListener('submit', function (event) {
+                event.preventDefault();
+                limparResultados();  // eduardo,aqui liimpa os resultados antes de exibir novos
+                const estado = formEndereco.estado.value;
+                const cidade = formEndereco.cidade.value;
+                const logradouro = formEndereco.logradouro.value;
+                buscarCep(estado, cidade, logradouro);
+            });
+
+            function salvarHistorico(cep, logradouro, estado, cidade) {
+                let historico = JSON.parse(localStorage.getItem('historico')) || [];
+                //eduardo,aqui adiciona o novo item no início do histórico
+                historico.unshift({ cep: cep, logradouro: logradouro, estado: estado, cidade: cidade });
+                localStorage.setItem('historico', JSON.stringify(historico));
+                exibirHistorico();
+            }
+
+            function exibirHistorico() {
+                let historico = JSON.parse(localStorage.getItem('historico')) || [];
+                historicoContainer.innerHTML = '';
+                historico.forEach(item => {
+                    const div = document.createElement('div');
+                    div.innerHTML = `CEP: ${item.cep}<br>Rua: ${item.logradouro}<br>Cidade: ${item.cidade}<br>Estado: ${item.estado}<br><br>`;
+                    div.className = 'historico-item';
+                    div.dataset.cep = item.cep; //Maria, aquii adiciona o CEP como dado do elemento
+                    div.dataset.logradouro = item.logradouro; //adiciona o logradouro como dado do elemento
+                    div.dataset.estado = item.estado; //adiciona o estado como dado do elemento
+                    div.dataset.cidade = item.cidade; //adiciona a cidade como dado do elemento
+                    div.addEventListener('click', function() {
+                        limparResultados(); //limpa os resultados antes de realizar uma nova pesquisa
+                        buscarCepPeloEndereco(item.estado, item.cidade, item.logradouro); // Pesquisa o CEP ao clicar no histórico
+                    });
+                    historicoContainer.appendChild(div);
+                });
+            }
+
+            async function buscarEndereco(cep) {
+                if (cep.length !== 8) {
+                    resultContainer.innerHTML = 'CEP inválido.';
+                    return;
+                }
+                try {
+                    const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+                    const data = await response.json();
+                    if (data.erro) {
+                        resultContainer.innerHTML = 'Endereço não encontrado.';
+                    } else {
+                        resultContainer.innerHTML = `
+                            Logradouro: ${data.logradouro}<br>
+                            Bairro: ${data.bairro}<br>
+                            Cidade: ${data.localidade}<br>
+                            Estado: ${data.uf}
+                        `;
+                        salvarHistorico(cep, data.logradouro, data.uf, data.localidade);
+                    }
+                } catch (error) {
+                    resultContainer.innerHTML = 'Erro ao buscar o endereço.';
+                }
+            }
+
+            async function buscarCep(estado, cidade, logradouro) {
+                try {
+                    const response = await fetch(`https://viacep.com.br/ws/${estado}/${cidade}/${logradouro}/json/`);
+                    const data = await response.json();
+                    if (data.length === 0) {
+                        resultContainer.innerHTML = 'CEP não encontrado.';
+                    } else {
+                        data.forEach(item => {
+                            resultContainer.innerHTML += `
+                                CEP: ${item.cep}<br>
+                                Logradouro: ${item.logradouro}<br>
+                                Bairro: ${item.bairro}<br>
+                                Cidade: ${item.localidade}<br>
+                                Estado: ${item.uf}<br><br>
+                            `;
+                            salvarHistorico(item.cep, item.logradouro, item.uf, item.localidade);
+                        });
+                    }
+                } catch (error) {
+                    resultContainer.innerHTML = 'Erro ao buscar o CEP.';
+                }
+            }
+
+            async function buscarCepPeloEndereco(estado, cidade, logradouro) {
+                try {
+                    const response = await fetch(`https://viacep.com.br/ws/${estado}/${cidade}/${logradouro}/json/`);
+                    const data = await response.json();
+                    if (data.length === 0) {
+                        resultContainer.innerHTML = 'CEP não encontrado.';
+                    } else {
+                        resultContainer.innerHTML = data.map(item => `
+                            CEP: ${item.cep}<br>
+                            Logradouro: ${item.logradouro}<br>
+                            Bairro: ${item.bairro}<br>
+                            Cidade: ${item.localidade}<br>
+                            Estado: ${item.uf}<br><br>
+                        `).join('');
+                    }
+                } catch (error) {
+                    resultContainer.innerHTML = 'Erro ao buscar o CEP.';
+                }
+            }
+
+            document.getElementById('limpar').addEventListener('click', function () {
+                limparResultados();
+                localStorage.removeItem('historico');
+                historicoContainer.innerHTML = '';
+            });
+
+            exibirHistorico();
+        });
+    </script>
+
+</body>
+
+</html>

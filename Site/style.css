@@ -1,0 +1,140 @@
+/* Define o estilo geral do corpo da página */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+.fino{
+    text-align: center;
+}
+.texto{
+    text-align: center;
+
+}
+/* Container principal que centraliza o formulário e resultados */
+.container {
+    width: 90%;
+    max-width: 800px;
+    background-color: #DBB0A0;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+/* Estilo do formulário */
+.formulario {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Adiciona espaçamento entre os elementos do formulário */
+}
+
+/* Estilo para os campos de entrada e botões dentro do formulário */
+form input[type="text"],
+form select,
+form input[type="submit"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box; /* Garante que o padding e a borda não aumentem a largura total */
+}
+
+form input[type="submit"] {
+    background-color: #6A142C;
+    transition: background-color 0.3s;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    margin: 10px 0; /* Adiciona espaçamento entre o botão e outros elementos */
+}
+
+form input[type="submit"]:hover {
+    background-color: #0056b3;
+}
+form input[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+/* Estilo para o botão de limpar */
+button#limpar {
+    background-color: #6A142C;
+    color: #fff;
+    width: 80px;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-top: 10px;
+}
+
+button#limpar:hover {
+    background-color: #809dd3;
+    transition: background-color 0.3s;
+}
+
+/* Container para resultados */
+#resultados,
+#historico {
+    margin-top: 20px;
+}
+
+/* Estilo dos resultados */
+#resultados div,
+#historico div {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Exibe cada resultado com uma estrutura de linha e coluna */
+.resultado {
+    display: flex;
+    flex-direction: column;
+}
+
+.resultado div {
+    margin-bottom: 5px;
+}
+
+/* Adiciona espaçamento entre cada campo dos resultados */
+.resultado span {
+    display: block;
+    margin-bottom: 5px;
+}
+
+/* Estilo para os campos do formulário de busca de CEP */
+#buscaCep {
+    margin-bottom: 20px;
+}
+
+/* Estilo para o formulário de busca de endereço */
+
+/* Estilo para o container de cada formulário */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Adiciona estilos para itens do histórico */
+.historico-item {
+    padding: 10px;
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
+    cursor: pointer;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+    transition: background-color 0.3s;
+}
+
+.historico-item:hover {
+    background-color: #e2e2e2;
+}
+
+
